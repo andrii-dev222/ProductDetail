@@ -91,7 +91,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
     }
 
     return (
-        <div className={`max-w-6xl mx-auto ${almarai_bold.className}`}>
+        <div className={`max-w-6xl mx-auto mt-4 ${almarai_bold.className}`}>
             <div className="p-6 mb-4 flex flex-col md:flex-row gap-8 card">
                 {/* Product Images */}
                 <div className="md:w-1/2">
