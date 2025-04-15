@@ -9,17 +9,9 @@ import Star from '@/components/icons/Star'
 import MoneyBill from '@/components/icons/MoneyBill'
 import CartPlus from '@/components/icons/CartPlus'
 import Image from 'next/image'
-
-interface ProductVariant {
-    size: string;
-    color: string;
-}
-
-interface ProdctImage {
-    Id: number;
-    Position: number;
-    Src: string;
-}
+import LoadingBar from '@/components/LoadingBar'
+import RelatedProducts from '@/components/RelatedProducts'
+import type { ProductVariant, ProdctImage, RelatedProduct } from '@/lib/interfaces';
 
 const almarai_bold = Almarai({
     weight: '700',
@@ -34,6 +26,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
     const [selectedVariant, setSelectedVariant] = useState<ProductVariant>({ size: '', color: '' })
     const [loading, setLoading] = useState(true)
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
+    const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
 
     useEffect(() => {
         const initializeShopId = async () => {
@@ -57,6 +50,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
             try {
                 const productData = await getProductDetail(productId, sId)
                 setProduct(productData.Data.Product)
+                setRelatedProducts(productData.Data.RelatedProducts || [])
             } catch (error) {
                 console.error('Failed to fetch product:', error)
             } finally {
@@ -68,7 +62,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
     }, [productId, sId])
 
     if (loading) {
-        return <div className="flex justify-center items-center h-screen">...</div>
+        return <LoadingBar />
     }
 
     if (!product) {
@@ -204,19 +198,24 @@ export default function ProductDetail({ productId }: { productId: string }) {
                         </div>
                         <div className="w-full py-3 text-white rounded-lg btn-danger flex justify-center items-center gap-2 cursor-pointer">
                             <span> إشتري الآن</span>
-                            <MoneyBill/>
+                            <MoneyBill />
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Product Description Card */}
-            <div className="bg-white rounded-lg p-6 card">
+            <div className="bg-white rounded-lg p-6 card mb-6">
                 <div className="text-right">
                     <h2 className="text-xl font-bold mb-4">تفاصيل المنتج</h2>
                     <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: product.Description }} />
                 </div>
             </div>
+
+            {/* Related Products */}
+            {relatedProducts.length > 0 && (
+                <RelatedProducts products={relatedProducts} />
+            )}
         </div>
     )
 }
