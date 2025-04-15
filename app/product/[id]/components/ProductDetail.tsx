@@ -140,7 +140,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                         <div className="flex items-center gap-2 mb-2">
                             <div className="flex gap-1">
                                 {[1, 2, 3, 4, 5].map((star) => (
-                                    <span key={star} className="text-gray-400">
+                                    <span key={star} className="text-gray-400 cursor-pointer">
                                         <Star />
                                     </span>
                                 ))}
@@ -164,7 +164,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                 >
                                     <button
                                         key={size}
-                                        className='w-12 h-12 rounded-full border'
+                                        className='w-12 h-12 rounded-full border cursor-pointer'
                                     >
                                         {size}
                                     </button>
@@ -188,7 +188,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                 >
                                     <button
                                         key={color}
-                                        className='w-12 h-12 rounded-full border'
+                                        className='w-12 h-12 cursor-pointer rounded-full border'
                                         style={{ backgroundColor: color }}
                                     />
                                 </div>
