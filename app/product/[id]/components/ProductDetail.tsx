@@ -2,16 +2,13 @@
 import { Almarai } from 'next/font/google'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getProductDetail, getShopId } from '@/lib/services/api'
-import { setShopId } from '@/lib/store/shopSlice'
-import type { RootState } from '@/lib/store/store'
 import Star from '@/components/icons/Star'
 import MoneyBill from '@/components/icons/MoneyBill'
 import CartPlus from '@/components/icons/CartPlus'
 import Image from 'next/image'
-import LoadingBar from '@/components/LoadingBar'
 import RelatedProducts from '@/components/RelatedProducts'
 import type { ProductVariant, ProdctImage, RelatedProduct } from '@/lib/interfaces';
+import { setShopId } from '@/lib/store/shopSlice'
 
 const almarai_bold = Almarai({
     weight: '700',
@@ -19,55 +16,29 @@ const almarai_bold = Almarai({
     display: 'swap',
 })
 
-export default function ProductDetail({ productId }: { productId: string }) {
+interface ProductDetailProps {
+    product: any;
+    relatedProducts: RelatedProduct[];
+    shopId: number;
+}
+
+export default function ProductDetail({ product, relatedProducts, shopId }: ProductDetailProps) {
     const dispatch = useDispatch()
-    const sId = useSelector((state: RootState) => state.shop.sId)
-    const [product, setProduct] = useState<any>(null)
+
+    useEffect(() => {
+        if (shopId) {
+            dispatch(setShopId(shopId))
+        }
+    }, [dispatch, shopId])
+
     const [selectedVariant, setSelectedVariant] = useState<ProductVariant>({ size: '', color: '' })
-    const [loading, setLoading] = useState(true)
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
-    const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
 
     useEffect(() => {
-        const initializeShopId = async () => {
-            try {
-                const referer = `localhost:58961`
-                const shopIdResponse = await getShopId(referer)
-                dispatch(setShopId(shopIdResponse.Data.Id))
-            } catch (error) {
-                console.error('Failed to get shop ID:', error)
-            }
+        if (shopId) {
+            dispatch(setShopId(shopId))
         }
-
-        if (!sId) {
-            initializeShopId()
-        }
-    }, [dispatch, sId])
-
-    useEffect(() => {
-        const fetchProduct = async () => {
-            if (!sId) return
-            try {
-                const productData = await getProductDetail(productId, sId)
-                setProduct(productData.Data.Product)
-                setRelatedProducts(productData.Data.RelatedProducts || [])
-            } catch (error) {
-                console.error('Failed to fetch product:', error)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchProduct()
-    }, [productId, sId])
-
-    if (loading) {
-        return <LoadingBar />
-    }
-
-    if (!product) {
-        return <div>Product not found</div>
-    }
+    }, [dispatch, shopId])
 
     const isFirstImage = currentImageIndex === 0;
     const isLastImage = currentImageIndex === product.ProductImages.length - 1;
