@@ -12,7 +12,7 @@ export default function RelatedProducts({ products }: { products: RelatedProduct
                         <div className="group cursor-pointer">
                             <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
                                 <Image
-                                    src={`https://ik.imagekit.io/a01bjbmceb/Prods/${product.CoverImg}`}
+                                    src={`https://ik.imagekit.io/a01bjbmceb/${!!product.CoverImg ? "Prods/" + product.CoverImg : 'no-img600x300.png'}`}
                                     alt={product.Name}
                                     fill
                                     className="object-contain group-hover:scale-105 transition-transform duration-200"

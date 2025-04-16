@@ -41,8 +41,7 @@ export default function ProductDetail({ product, relatedProducts, shopId }: Prod
     }, [dispatch, shopId])
 
     const isFirstImage = currentImageIndex === 0;
-    const isLastImage = currentImageIndex === product.ProductImages.length - 1;
-
+    const isLastImage = !!product ? (!product.ProductImages.length || currentImageIndex ===  product.ProductImages.length - 1) : true;
     const handleNextImage = () => {
         if (!isLastImage) {
             setCurrentImageIndex(prev => prev + 1);
@@ -56,13 +55,13 @@ export default function ProductDetail({ product, relatedProducts, shopId }: Prod
     }
 
     return (
-        <div className={`max-w-6xl mx-auto mt-4 ${almarai_bold.className}`}>
+        product !== undefined ? <div className={`max-w-6xl mx-auto mt-4 ${almarai_bold.className}`}>
             <div className="p-6 mb-4 flex flex-col md:flex-row gap-8 card">
                 {/* Product Images */}
                 <div className="md:w-1/2">
                     <div className="relative bg-gray-50 rounded-lg aspect-square w-full">
                         <Image
-                            src={`https://ik.imagekit.io/a01bjbmceb/Prods/${product.ProductImages[currentImageIndex].Src}`}
+                            src={`https://ik.imagekit.io/a01bjbmceb/${product.ProductImages.length > 0 ? "Prods/" + product.ProductImages[currentImageIndex].Src : "no-img300x300.png" }`}
                             alt={product.Name}
                             fill
                             className="object-contain"
@@ -96,8 +95,8 @@ export default function ProductDetail({ product, relatedProducts, shopId }: Prod
                 <div className="md:w-1/2 text-right">
                     {/* Price Section */}
                     <div className="flex flex-row-reverse justify-end items-center gap-3">
-                        <span className={`text-2xl text-red-600 ${almarai_bold.className}`}>450 د.ل</span>
-                        <span className={`text-2xl line-through ${almarai_bold.className}`}>600 د.ل</span>
+                        <span className={`text-2xl text-red-600 ${almarai_bold.className}`}>{product.SPrice} د.ل</span>
+                        <span className={`text-2xl line-through ${almarai_bold.className}`}>{product.Caprice} د.ل</span>
                     </div>
 
                     {/* Rating and Reviews */}
@@ -114,52 +113,49 @@ export default function ProductDetail({ product, relatedProducts, shopId }: Prod
                         <p className="text-sm">التقييمات (0) كتابة تعليق</p>
                     </div>
                     <hr className="my-6 h-0.5 border-t-0 bg-gray-300" />
-                    {/* Size Selection */}
-                    <div className="mb-8">
-                        <h3 className="text-lg mb-4">رقم</h3>
-                        <div className="flex flex-row gap-3">
-                            {[37, 38, 39, 40].map((size) => (
-                                <div
-                                    key={`size-${size}`}
-                                    onClick={() => setSelectedVariant({ ...selectedVariant, size: size.toString() })}
-                                    className={`p-1 rounded-full ${selectedVariant.size === size.toString()
-                                        ? 'border-red-500 border-2 border-dashed'
-                                        : 'border-0'
-                                        }`}
-                                >
-                                    <button
-                                        key={size}
-                                        className='w-12 h-12 rounded-full border cursor-pointer'
-                                    >
-                                        {size}
-                                    </button>
+                    {product.ProductOptions.length > 0 && product.ProductOptions.map((variant: any) => {
+                        return (
+                            <div key={variant.OptId} className="mb-4">
+                                <h3 className="text-lg mb-2">{variant.CatName}</h3>
+                                <div className="flex flex-row gap-3">
+                                    {variant.Items.map((item: any) => (
+                                        variant.CatId !== 50 ? (
+                                            <div
+                                                key={`size-${item.ItemName}`}
+                                                onClick={() => setSelectedVariant({ ...selectedVariant, size: item.ItemName.toString() })}
+                                                className={`p-1 rounded-full ${selectedVariant.size === item.ItemName.toString()
+                                                    ? 'border-red-500 border-2 border-dashed'
+                                                    : 'border-0'
+                                                    }`}
+                                            >
+                                                <button
+                                                    key={item.ItemName}
+                                                    className='w-12 h-12 rounded-full border cursor-pointer'
+                                                >
+                                                    {item.ItemName}
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div
+                                                key={`color-${item.BcolorHex}`}
+                                                onClick={() => setSelectedVariant({ ...selectedVariant, color: item.BcolorHex.toString() })}
+                                                className={`p-1 rounded-full leading-none ${selectedVariant.color === item.BcolorHex.toString()
+                                                    ? 'border-red-500 border-2 border-dashed'
+                                                    : 'border-0'
+                                                    }`}
+                                            >
+                                                <button
+                                                    key={item.BcolorHex}
+                                                    className='w-12 h-12 cursor-pointer rounded-full border'
+                                                    style={{ backgroundColor: item.BcolorHex }}
+                                                />
+                                            </div>
+                                        )
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Color Selection */}
-                    <div className="mb-8">
-                        <h3 className="text-lg mb-4">ألوان متاحة</h3>
-                        <div className="flex flex-row gap-3">
-                            {['red', 'gray', 'black'].map((color) => (
-                                <div
-                                    key={`color-${color}`}
-                                    onClick={() => setSelectedVariant({ ...selectedVariant, color: color.toString() })}
-                                    className={`p-1 rounded-full leading-none ${selectedVariant.color === color.toString()
-                                        ? 'border-red-500 border-2 border-dashed'
-                                        : 'border-0'
-                                        }`}
-                                >
-                                    <button
-                                        key={color}
-                                        className='w-12 h-12 cursor-pointer rounded-full border'
-                                        style={{ backgroundColor: color }}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                            </div>
+                        )
+                    })}
 
                     {/* Action Buttons */}
                     <div className="space-y-3">
@@ -184,9 +180,11 @@ export default function ProductDetail({ product, relatedProducts, shopId }: Prod
             </div>
 
             {/* Related Products */}
-            {relatedProducts.length > 0 && (
-                <RelatedProducts products={relatedProducts} />
-            )}
-        </div>
+            {
+                relatedProducts.length > 0 && (
+                    <RelatedProducts products={relatedProducts} />
+                )
+            }
+        </div> : <div className='flex items-center justify-center w-screen h-screen'>Product Not Found</div>
     )
 }

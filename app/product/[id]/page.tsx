@@ -18,9 +18,9 @@ export default async function ProductPage({ params }: PageProps) {
 
   return (
     <ProductDetail 
-      product={productData.Data.Product} 
-      relatedProducts={productData.Data.RelatedProducts || []}
-      shopId={shopIdResponse.Data.Id}
+      product={productData?.Data?.Product} 
+      relatedProducts={productData?.Data?.RelatedProducts || []}
+      shopId={shopIdResponse?.Data?.Id}
     />
   )
 }

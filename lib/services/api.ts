@@ -17,5 +17,6 @@ export const getProductDetail = async (productId: string, sId: number) => {
       sId: sId
     }
   })
+  console.log(response.data)
   return response.data
 }
